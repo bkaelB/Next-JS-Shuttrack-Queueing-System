@@ -112,6 +112,22 @@ export default function PaymentPage() {
         }
     };
 
+    const handleDownloadAll = async () => {
+        try {
+            const res = await fetch("/api/export");
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "badminton_data.xlsx";
+            link.click();
+        } catch (error) {
+            console.error("Error downloading Excel:", error);
+        }
+    };
+
+    
+
 
     useEffect(() => {
         fetchPlayers();
@@ -120,9 +136,18 @@ export default function PaymentPage() {
 
     return (
         <div className="p-8 bg-gray-50 min-h-screen text-gray-800">
-            <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-                💸 Player Payments
-            </h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold text-gray-900">💸 Player Payments</h1>
+                <button
+                    onClick={handleDownloadAll}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow transition cursor-pointer"
+                >
+                    📊 Download Match & Payment Data
+                </button>
+            </div>
+
+
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {/* LEFT SIDE */}

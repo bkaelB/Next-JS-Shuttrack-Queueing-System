@@ -30,12 +30,34 @@ export default function HistoryPage() {
     fetchHistory();
   }, []);
 
+  const handleDownload = async () => {
+    try {
+      const res = await fetch("/api/history/export");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "match_history.xlsx";
+      link.click();
+    } catch (error) {
+      console.error("Error downloading Excel file:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          🏸 Match History
-        </h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">
+            🏸 Match History
+          </h1>
+          <button
+            onClick={handleDownload}
+            className="px-4 py-2  bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow cursor-pointer"
+          >
+            ⬇️ Download Excel
+          </button>
+        </div>
 
         {loading ? (
           <p className="text-gray-600 text-center">Loading match history...</p>
@@ -48,8 +70,8 @@ export default function HistoryPage() {
                 key={match.match_id}
                 className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200 bg-gray-50"
               >
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm text-gray-500">
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-gray-500">
                     Match ID: <span className="font-mono">{match.match_id}</span>
                   </p>
                   <span
@@ -63,9 +85,9 @@ export default function HistoryPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-2">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h2 className="font-semibold text-gray-800 mb-1">
+                    <h2 className="font-semibold text-gray-800 ">
                       Team A
                     </h2>
                     <p className="text-sm text-gray-600">
@@ -73,7 +95,7 @@ export default function HistoryPage() {
                     </p>
                   </div>
                   <div>
-                    <h2 className="font-semibold text-gray-800 mb-1">
+                    <h2 className="font-semibold text-gray-800 ">
                       Team B
                     </h2>
                     <p className="text-sm text-gray-600">
@@ -82,7 +104,7 @@ export default function HistoryPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-gray-400 mt-3 text-right">
+                <p className="text-xs text-gray-400  text-right">
                   Played on: {new Date(match.created_at).toLocaleString()}
                 </p>
               </div>
