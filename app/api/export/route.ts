@@ -4,7 +4,7 @@ import ExcelJS from "exceljs";
 
 export async function GET() {
   try {
-    // === 1️⃣ Fetch Match History ===
+    //  Fetch Match History 
     const [matches]: any = await pool.query(`
       SELECT 
         m.id AS match_id,
@@ -19,7 +19,7 @@ export async function GET() {
       ORDER BY m.created_at DESC
     `);
 
-    // === 2️⃣ Fetch Payments ===
+    // Fetch Payments
     const [payments]: any = await pool.query(`
       SELECT 
         payments.id AS payment_id,
@@ -32,10 +32,10 @@ export async function GET() {
       ORDER BY payments.timestamp DESC
     `);
 
-    // === 3️⃣ Create Workbook ===
+    // Create Workbook 
     const workbook = new ExcelJS.Workbook();
 
-    // 🏸 MATCH HISTORY SHEET
+    //  MATCH HISTORY SHEET
     const matchSheet = workbook.addWorksheet("Match History");
     matchSheet.columns = [
       { header: "Match ID", key: "match_id", width: 10 },
@@ -53,7 +53,7 @@ export async function GET() {
       fgColor: { argb: "FF0077B6" },
     };
 
-    // 💰 PAYMENTS SHEET
+    //  PAYMENTS SHEET
     const paySheet = workbook.addWorksheet("Payments");
     paySheet.columns = [
       { header: "Payment ID", key: "payment_id", width: 10 },
@@ -71,7 +71,7 @@ export async function GET() {
       fgColor: { argb: "FF00A896" },
     };
 
-    // === 4️⃣ Add Totals Summary ===
+    //  Add Totals Summary 
     const totalAmount = payments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
     const totalGcash = payments
       .filter((p: any) => p.method === "gcash")
@@ -99,7 +99,7 @@ export async function GET() {
       }
     }
 
-    // === 5️⃣ Return the Excel file ===
+    // Return the Excel file
     const buffer = await workbook.xlsx.writeBuffer();
     return new NextResponse(buffer, {
       headers: {

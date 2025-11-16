@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Plus, X } from "lucide-react";
 
 interface Player {
   id: number;
@@ -36,6 +37,8 @@ export default function PlayersPage() {
   const [hoveredPlayerId, setHoveredPlayerId] = useState<number | null>(null);
   const [playerHistory, setPlayerHistory] = useState<any[]>([]);
   const [timerTick, setTimerTick] = useState(0);
+  const [confirmDonePlayer, setConfirmDonePlayer] = useState<Player | null>(null);
+
 
   // Fetch players
   const fetchPlayers = async () => {
@@ -214,26 +217,26 @@ export default function PlayersPage() {
 
   //Format playing timmme
   function formatWaitingTime(startTime, totalWaitingTime) {
-  if (!startTime) return "0 min";
+    if (!startTime) return "0 min";
 
-  const now = new Date();
-  const start = new Date(startTime);
-  const diff = Math.floor((now - start) / 1000) + (totalWaitingTime || 0);
+    const now = new Date();
+    const start = new Date(startTime);
+    const diff = Math.floor((now - start) / 1000) + (totalWaitingTime || 0);
 
-  const minutes = Math.floor(diff / 60);
-  return `${minutes} min${minutes !== 1 ? "s" : ""}`;
-}
+    const minutes = Math.floor(diff / 60);
+    return `${minutes} min${minutes !== 1 ? "s" : ""}`;
+  }
 
 
   return (
     <div className="p-8 flex gap-4">
       {/* Player List */}
-      <div className="space-y-4 w-1/5  overflow-y-auto p-4 bg-gray-50 h-screen rounded-2xl shadow-inner">
+      <div className="space-y-4 w-1/10 md:w-1/4 xl:w-1/6 2xl:w-1/8 overflow-y-auto p-4 bg-gray-50 h-screen rounded-2xl shadow-inner">
         <div className="flex justify-between items-center mb-2 ">
           <h2 className="text-lg mb-4 font-bold text-gray-700">Players</h2>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-3 py-1 bg-blue-400 text-white rounded hover:bg-green-600 cursor-pointer"
+            className="px-3 py-1  bg-blue-400 text-white rounded hover:bg-green-600 cursor-pointer"
           >
             + Add Player
           </button>
@@ -244,71 +247,70 @@ export default function PlayersPage() {
           {activePlayers.map((player) => (
             <div
               key={player.id}
-              className="flex justify-between items-center relative bg-white hover:shadow-lg transition rounded-xl p-3 border border-gray-200"
+              className="flex justify-between items-center bg-white hover:shadow-lg transition rounded-xl p-3 border border-gray-200"
             >
-              <div >
+              <div className="flex flex-col">
                 <h3 className="text-md font-semibold text-gray-800">{player.name}</h3>
-                <div className="flex flex-col text-sm text-gray-600 relative">
-                  <div className="flex items-center space-x-2">
-                    <p>{player.level}</p>
-                    <p>/</p>
-                    <p>Games: {player.games_played}</p>
-                  </div>
-                  <p className="text-green-700 font-mono">
-                    ⏱ {formatWaitingTime(player.waiting_start, player.total_waiting_time)}
-                  </p>
-                  <span
-                    className="text-blue-600 underline cursor-pointer mt-1"
-                    onMouseEnter={() => fetchAndShowHistory(player.id)}
-                    onMouseLeave={() => setHoveredPlayerId(null)}
-                  >
-                    History
-                  </span>
-
-                  {hoveredPlayerId === player.id && playerHistory.length > 0 && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-72 bg-white/95 backdrop-blur-md border border-gray-300 rounded-xl shadow-xl p-3 z-50">
-                      <h4 className="text-sm font-semibold mb-2 text-gray-800">Match History</h4>
-                      <ul className="max-h-80 overflow-y-auto text-xs text-gray-700 space-y-2 pr-2">
-                        {playerHistory.map((match) => (
-                          <li key={match.match_id} className="border-b border-gray-200 pb-2">
-                            <p>
-                              <strong>Status:</strong> {match.status}
-                            </p>
-                            <p>
-                              <strong>Teammates:</strong> {match.teammates || "None"}
-                            </p>
-                            <p>
-                              <strong>Opponents:</strong> {match.opponents || "None"}
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <p>{player.level}</p>
+                  <p>/</p>
+                  <p>Games: {player.games_played}</p>
                 </div>
+                <p className="text-green-700 font-mono">
+                  ⏱ {formatWaitingTime(player.waiting_start, player.total_waiting_time)}
+                </p>
+                <span
+                  className="text-blue-600 underline cursor-pointer mt-1"
+                  onMouseEnter={() => fetchAndShowHistory(player.id)}
+                  onMouseLeave={() => setHoveredPlayerId(null)}
+                >
+                  History
+                </span>
               </div>
 
-              <div className="flex flex-col items-end space-y-1">
+              {hoveredPlayerId === player.id && playerHistory.length > 0 && (
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-72 bg-white/95 backdrop-blur-md border border-gray-300 rounded-xl shadow-xl p-3 z-50">
+                  <h4 className="text-sm font-semibold mb-2 text-gray-800">Match History</h4>
+                  <ul className="max-h-80 overflow-y-auto text-xs text-gray-700 space-y-2 pr-2">
+                    {playerHistory.map((match) => (
+                      <li key={match.match_id} className="border-b border-gray-200 pb-2">
+                        <p>
+                          <strong>Status:</strong> {match.status}
+                        </p>
+                        <p>
+                          <strong>Teammates:</strong> {match.teammates || "None"}
+                        </p>
+                        <p>
+                          <strong>Opponents:</strong> {match.opponents || "None"}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+
+              <div className="flex flex-col items-center gap-1 ">
                 <button
                   onClick={() => handleAddToQueue(player)}
                   disabled={matches.some((m) =>
                     m.players.some((p) => p.player_id === player.id)
                   )}
-                  className={`px-2 rounded-xl text-md ${matches.some((m) => m.players.some((p) => p.player_id === player.id))
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-700 hover:bg-green-900 cursor-pointer"
+                  className={`p-1 rounded-full ${matches.some((m) => m.players.some((p) => p.player_id === player.id))
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-700 hover:bg-green-900 cursor-pointer"
                     }`}
                 >
-                  Add to Queue
+                  <Plus className="w-4 h-4 text-white" />
                 </button>
 
                 <button
-                  onClick={() => handleDonePlaying(player.id)}
-                  className="text-xs bg-red-400 text-white px-2 py-1 rounded-lg hover:bg-red-950 cursor-pointer"
+                  onClick={() => setConfirmDonePlayer(player)} // open modal
+                  className="p-1 rounded-full bg-red-400 hover:bg-red-950 cursor-pointer"
                 >
-                  Done Playing
+                  <X className="w-4 h-4 text-white" />
                 </button>
+
               </div>
             </div>
           ))}
@@ -368,8 +370,8 @@ export default function PlayersPage() {
                     >
                       <h3
                         className={`font-semibold text-md ${p.done_playing
-                            ? "line-through text-gray-600"
-                            : "text-gray-800"
+                          ? "line-through text-gray-600"
+                          : "text-gray-800"
                           }`}
                       >
                         {p.name}
@@ -399,8 +401,8 @@ export default function PlayersPage() {
                     >
                       <h3
                         className={`font-semibold text-md ${p.done_playing
-                            ? "line-through text-gray-600"
-                            : "text-gray-800"
+                          ? "line-through text-gray-600"
+                          : "text-gray-800"
                           }`}
                       >
                         {p.name}
@@ -429,13 +431,13 @@ export default function PlayersPage() {
                     onClick={() => handleFinishMatch(match.matchId)}
                     className="px-2 py-1 bg-gray-900 font-semibold text-white text-sm rounded-l-xl cursor-pointer"
                   >
-                     ✔ Finish
+                    ✔ Finish
                   </button>
                   <button
                     onClick={() => handleCancelMatch(match.matchId)}
                     className="px-2 py-1 bg-gray-600 font-semibold text-white text-sm rounded-r-xl cursor-pointer"
                   >
-                     ❌ Cancel
+                    ❌ Cancel
                   </button>
                 </div>
               )}
@@ -494,6 +496,36 @@ export default function PlayersPage() {
           </div>
         </div>
       )}
+
+      {/* Confirm Done Modal */}
+      {confirmDonePlayer && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-lg shadow-lg w-80 p-6 text-black">
+            <h2 className="text-lg font-bold mb-4">Confirm</h2>
+            <p className="mb-4">
+              Is <span className="font-semibold">{confirmDonePlayer.name}</span> done playing?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDonePlayer(null)} // cancel
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 cursor-pointer"
+              >
+                No
+              </button>
+              <button
+                onClick={() => {
+                  handleDonePlaying(confirmDonePlayer.id);
+                  setConfirmDonePlayer(null); // close modal
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
